@@ -1,0 +1,107 @@
+version: "3.8"
+
+services:
+  # Backend services
+  model-service:
+    build:
+      context: ./services/model-service
+      dockerfile: ../../infrastructure/docker/dev/Dockerfile.node
+    volumes:
+      - ./services/model-service:/app
+    ports:
+      - "4001:4000"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/financeforge
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=development
+
+  calculation-engine:
+    build:
+      context: ./services/calculation-engine
+      dockerfile: ../../infrastructure/docker/dev/Dockerfile.node
+    volumes:
+      - ./services/calculation-engine:/app
+    ports:
+      - "4002:4000"
+    depends_on:
+      - postgres
+      - clickhouse
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/financeforge
+      - CLICKHOUSE_URL=clickhouse://clickhouse:9000/default
+      - NODE_ENV=development
+
+  user-management:
+    build:
+      context: ./services/user-management
+      dockerfile: ../../infrastructure/docker/dev/Dockerfile.node
+    volumes:
+      - ./services/user-management:/app
+    ports:
+      - "4003:4000"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/financeforge
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=development
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../infrastructure/docker/dev/Dockerfile.react
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+
+  # Databases
+  postgres:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=financeforge
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  mongodb:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=mongo
+    volumes:
+      - mongo-data:/data/db
+
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+
+volumes:
+  postgres-data:
+  redis-data:
+  mongo-data:
+  clickhouse-data:
+

@@ -4,11 +4,11 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import App from "./App";
 
 const client = new ApolloClient({
-  uri: "http://localhost:4000/graphql",
+  uri: "http://localhost:4003/graphql", // Point to User Management service
   cache: new InMemoryCache()
 });
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
@@ -16,4 +16,3 @@ root.render(
     </ApolloProvider>
   </React.StrictMode>
 );
-

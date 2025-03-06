@@ -1,12 +1,28 @@
 {
   "name": "calculation-engine",
   "version": "0.1.0",
-  "description": "calculation-engine for FinanceForge platform",
-  "main": "src/index.ts",
+  "description": "Calculation Engine for FinanceForge platform",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "dev": "nodemon --exec ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn src/index.ts",
     "build": "tsc",
     "test": "jest"
+  },
+  "dependencies": {
+    "apollo-server-express": "^3.12.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "graphql": "^16.6.0",
+    "jsonwebtoken": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.1",
+    "@types/node": "^18.15.11",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.3"
   }
 }

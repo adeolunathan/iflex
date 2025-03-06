@@ -3,17 +3,34 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.7.10",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.11.16",
+    "d3": "^7.8.4",
+    "formik": "^2.2.9",
+    "graphql": "^16.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.10.0",
-    "apollo-client": "^2.6.10",
-    "graphql": "^16.6.0",
-    "@apollo/client": "^3.7.10",
-    "recharts": "^2.5.0",
     "react-flow-renderer": "^10.3.17",
-    "d3": "^7.8.2",
-    "formik": "^2.2.9",
+    "react-router-dom": "^6.10.0",
+    "recharts": "^2.5.0",
+    "uuid": "^9.0.0",
     "yup": "^1.0.2"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/d3": "^7.4.0",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^18.15.11",
+    "@types/react": "^18.0.33",
+    "@types/react-dom": "^18.0.11",
+    "@types/uuid": "^9.0.1",
+    "react-scripts": "5.0.1",
+    "typescript": "^5.0.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -25,6 +42,18 @@
     "extends": [
       "react-app",
       "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
     ]
   }
 }

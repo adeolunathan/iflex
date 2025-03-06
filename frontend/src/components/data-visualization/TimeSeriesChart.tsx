@@ -1,29 +1,29 @@
 // frontend/src/components/data-visualization/TimeSeriesChart.tsx
 
-import React, { useState, useEffect } from 'react';
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
+import React, { useState, useEffect } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
   ResponsiveContainer,
   AreaChart,
   Area,
   Bar,
   BarChart,
   ComposedChart,
-} from 'recharts';
-import { 
-  Box, 
-  Card, 
-  CardContent, 
-  Typography, 
-  FormControl, 
-  InputLabel, 
-  Select, 
+} from "recharts";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
   MenuItem,
   Checkbox,
   ListItemText,
@@ -36,23 +36,24 @@ import {
   Tooltip as MuiTooltip,
   ToggleButtonGroup,
   ToggleButton,
-} from '@mui/material';
-import { 
-  BarChart as BarChartIcon, 
-  ShowChart as LineChartIcon, 
+  SelectChangeEvent,
+} from "@mui/material";
+import {
+  BarChart as BarChartIcon,
+  ShowChart as LineChartIcon,
   StackedLineChart as AreaChartIcon,
   ViewComfy as ComposedChartIcon,
   Download as DownloadIcon,
   Settings as SettingsIcon,
   Refresh as RefreshIcon,
-} from '@mui/icons-material';
+} from "@mui/icons-material";
 
 // Chart type options
 enum ChartType {
-  LINE = 'LINE',
-  AREA = 'AREA',
-  BAR = 'BAR',
-  COMPOSED = 'COMPOSED',
+  LINE = "LINE",
+  AREA = "AREA",
+  BAR = "BAR",
+  COMPOSED = "COMPOSED",
 }
 
 // Data format expected by the component
@@ -75,14 +76,22 @@ interface TimeSeriesChartProps {
 
 // Color palette for chart series
 const COLORS = [
-  '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
-  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'
+  "#1f77b4",
+  "#ff7f0e",
+  "#2ca02c",
+  "#d62728",
+  "#9467bd",
+  "#8c564b",
+  "#e377c2",
+  "#7f7f7f",
+  "#bcbd22",
+  "#17becf",
 ];
 
 const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
   data,
   title,
-  xAxisKey = 'timestamp',
+  xAxisKey = "timestamp",
   seriesKeys,
   chartType: initialChartType = ChartType.LINE,
   stacked = false,
@@ -94,17 +103,17 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
   const [availableSeriesKeys, setAvailableSeriesKeys] = useState<string[]>([]);
   const [selectedSeriesKeys, setSelectedSeriesKeys] = useState<string[]>([]);
   const [chartType, setChartType] = useState<ChartType>(initialChartType);
-  
+
   // Format the data for better display
   const [formattedData, setFormattedData] = useState<any[]>([]);
-  
+
   // Extract all keys excluding the x-axis key
   useEffect(() => {
     if (data.length > 0) {
       const firstPoint = data[0];
-      const keys = Object.keys(firstPoint).filter(key => key !== xAxisKey);
+      const keys = Object.keys(firstPoint).filter((key) => key !== xAxisKey);
       setAvailableSeriesKeys(keys);
-      
+
       // If seriesKeys prop is provided, use it, otherwise use all available keys
       if (seriesKeys) {
         setSelectedSeriesKeys(seriesKeys);
@@ -117,38 +126,46 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
       setSelectedSeriesKeys([]);
     }
   }, [data, xAxisKey, seriesKeys]);
-  
+
   // Format the data for display
   useEffect(() => {
-    const formatted = data.map(point => {
+    const formatted = data.map((point) => {
       const formattedPoint: any = {};
-      
+
       // Format timestamp for display if it's a Date object
       if (point[xAxisKey] instanceof Date) {
-        formattedPoint[xAxisKey] = (point[xAxisKey] as Date).toLocaleDateString();
-      } else if (typeof point[xAxisKey] === 'string' && !isNaN(Date.parse(point[xAxisKey] as string))) {
+        formattedPoint[xAxisKey] = (
+          point[xAxisKey] as Date
+        ).toLocaleDateString();
+      } else if (
+        typeof point[xAxisKey] === "string" &&
+        !isNaN(Date.parse(point[xAxisKey] as string))
+      ) {
         // If it's a date string, format it
-        formattedPoint[xAxisKey] = new Date(point[xAxisKey] as string).toLocaleDateString();
+        formattedPoint[xAxisKey] = new Date(
+          point[xAxisKey] as string
+        ).toLocaleDateString();
       } else {
         // Otherwise use as is
         formattedPoint[xAxisKey] = point[xAxisKey];
       }
-      
+
       // Include only selected series
-      selectedSeriesKeys.forEach(key => {
+      selectedSeriesKeys.forEach((key) => {
         formattedPoint[key] = point[key];
       });
-      
+
       return formattedPoint;
     });
-    
+
     setFormattedData(formatted);
   }, [data, xAxisKey, selectedSeriesKeys]);
-  
-  const handleSeriesChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setSelectedSeriesKeys(event.target.value as string[]);
+
+  const handleSeriesChange = (event: SelectChangeEvent<string[]>) => {
+    const value = event.target.value;
+    setSelectedSeriesKeys(typeof value === "string" ? [value] : value);
   };
-  
+
   const handleChartTypeChange = (
     _: React.MouseEvent<HTMLElement>,
     newChartType: ChartType | null
@@ -157,36 +174,47 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
       setChartType(newChartType);
     }
   };
-  
+
   const handleDownload = () => {
     // Simple CSV export
     const headers = [xAxisKey, ...selectedSeriesKeys];
     const csvRows = [
-      headers.join(','),
-      ...data.map(point => {
-        return headers.map(header => point[header]).join(',');
-      })
+      headers.join(","),
+      ...data.map((point) => {
+        return headers.map((header) => point[header]).join(",");
+      }),
     ];
-    
-    const csvContent = csvRows.join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    const csvContent = csvRows.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${title.replace(/\s+/g, '_')}.csv`);
+
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `${title.replace(/\s+/g, "_")}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
-  
+
   // Render the appropriate chart based on the selected type
   const renderChart = () => {
+    if (formattedData.length === 0 || selectedSeriesKeys.length === 0) {
+      // Return a simple placeholder chart when there's no data
+      return (
+        <LineChart>
+          <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle">
+            No data to display
+          </text>
+        </LineChart>
+      );
+    }
+
     const commonProps = {
       data: formattedData,
       margin: { top: 10, right: 30, left: 0, bottom: 0 },
     };
-    
+
     switch (chartType) {
       case ChartType.LINE:
         return (
@@ -208,7 +236,7 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
             ))}
           </LineChart>
         );
-        
+
       case ChartType.AREA:
         return (
           <AreaChart {...commonProps}>
@@ -230,7 +258,7 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
             ))}
           </AreaChart>
         );
-        
+
       case ChartType.BAR:
         return (
           <BarChart {...commonProps}>
@@ -249,7 +277,7 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
             ))}
           </BarChart>
         );
-        
+
       case ChartType.COMPOSED:
         return (
           <ComposedChart {...commonProps}>
@@ -295,30 +323,45 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
             })}
           </ComposedChart>
         );
-        
+
       default:
-        return null;
+        // Provide a fallback chart instead of returning null
+        return (
+          <LineChart {...commonProps}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey={xAxisKey} />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            {selectedSeriesKeys.map((key, index) => (
+              <Line
+                key={key}
+                type="monotone"
+                dataKey={key}
+                stroke={COLORS[index % COLORS.length]}
+                activeDot={{ r: 8 }}
+                dot={false}
+              />
+            ))}
+          </LineChart>
+        );
     }
   };
-  
+
   return (
     <Card>
       <Toolbar
         sx={{
           pl: { sm: 2 },
           pr: { xs: 1, sm: 1 },
-          borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+          borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
         }}
       >
-        <Typography
-          sx={{ flex: '1 1 100%' }}
-          variant="h6"
-          component="div"
-        >
+        <Typography sx={{ flex: "1 1 100%" }} variant="h6" component="div">
           {title}
         </Typography>
-        
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+
+        <Box sx={{ display: "flex", alignItems: "center" }}>
           <ToggleButtonGroup
             value={chartType}
             exclusive
@@ -342,19 +385,22 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
                 <BarChartIcon />
               </MuiTooltip>
             </ToggleButton>
-            <ToggleButton value={ChartType.COMPOSED} aria-label="composed chart">
+            <ToggleButton
+              value={ChartType.COMPOSED}
+              aria-label="composed chart"
+            >
               <MuiTooltip title="Composed Chart">
                 <ComposedChartIcon />
               </MuiTooltip>
             </ToggleButton>
           </ToggleButtonGroup>
-          
+
           <MuiTooltip title="Refresh Data">
             <IconButton onClick={onRefresh} disabled={!onRefresh || loading}>
               <RefreshIcon />
             </IconButton>
           </MuiTooltip>
-          
+
           <MuiTooltip title="Download Data">
             <IconButton onClick={handleDownload}>
               <DownloadIcon />
@@ -365,7 +411,7 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={12} md={9}>
-            <Box sx={{ height: height, width: '100%' }}>
+            <Box sx={{ height: height, width: "100%" }}>
               <ResponsiveContainer width="100%" height="100%">
                 {renderChart()}
               </ResponsiveContainer>
@@ -384,7 +430,7 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
                 value={selectedSeriesKeys}
                 onChange={handleSeriesChange}
                 input={<OutlinedInput label="Series" />}
-                renderValue={(selected) => (selected as string[]).join(', ')}
+                renderValue={(selected) => (selected as string[]).join(", ")}
                 MenuProps={{
                   PaperProps: {
                     style: {
@@ -402,7 +448,7 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
                 ))}
               </Select>
             </FormControl>
-            
+
             <Box sx={{ mt: 2 }}>
               <Typography variant="subtitle2" gutterBottom>
                 Chart Options
@@ -416,7 +462,10 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
                     <Checkbox
                       checked={stacked}
                       onChange={() => setSelectedSeriesKeys(selectedSeriesKeys)}
-                      disabled={chartType === ChartType.LINE || chartType === ChartType.COMPOSED}
+                      disabled={
+                        chartType === ChartType.LINE ||
+                        chartType === ChartType.COMPOSED
+                      }
                     />
                   </Grid>
                 </Grid>

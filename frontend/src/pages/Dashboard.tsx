@@ -1,8 +1,8 @@
 // frontend/src/pages/Dashboard.tsx
 
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { gql, useQuery } from '@apollo/client';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { gql, useQuery } from "@apollo/client";
 import {
   Typography,
   Grid,
@@ -19,18 +19,18 @@ import {
   CardContent,
   CardActions,
   Chip,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Add as AddIcon,
   ArrowForward as ArrowForwardIcon,
   Description as DescriptionIcon,
   Group as GroupIcon,
   Assessment as AssessmentIcon,
-} from '@mui/icons-material';
-import { FinancialModel } from '../types/model';
-import { User } from '../types/auth';
-import { useAuth } from '../contexts/AuthContext';
-import Layout from '../components/common/Layout';
+} from "@mui/icons-material";
+import { FinancialModel } from "../types/model";
+import { User, UserRole } from "../types/auth";
+import { useAuth } from "../contexts/AuthContext";
+import Layout from "../components/common/Layout";
 
 // Queries
 const GET_RECENT_MODELS = gql`
@@ -59,50 +59,50 @@ const GET_USER_SUMMARY = gql`
 
 const Dashboard: React.FC = () => {
   const { state } = useAuth();
-  const organizationId = state.user?.organizationId || '';
-  
+  const organizationId = state.user?.organizationId || "";
+
   // Fetch recent models
-  const { 
-    loading: loadingModels, 
-    error: modelsError, 
-    data: modelsData 
+  const {
+    loading: loadingModels,
+    error: modelsError,
+    data: modelsData,
   } = useQuery(GET_RECENT_MODELS, {
     variables: { organizationId },
     skip: !organizationId,
   });
-  
+
   // Fetch users summary
-  const { 
-    loading: loadingUsers, 
-    error: usersError, 
-    data: usersData 
+  const {
+    loading: loadingUsers,
+    error: usersError,
+    data: usersData,
   } = useQuery(GET_USER_SUMMARY, {
     variables: { organizationId },
     skip: !organizationId,
   });
-  
+
   const [recentModels, setRecentModels] = useState<any[]>([]);
   const [userSummary, setUserSummary] = useState<User[]>([]);
-  
+
   useEffect(() => {
     if (modelsData && modelsData.models) {
       setRecentModels(modelsData.models.slice(0, 5));
     }
   }, [modelsData]);
-  
+
   useEffect(() => {
     if (usersData && usersData.users) {
       setUserSummary(usersData.users);
     }
   }, [usersData]);
-  
+
   // Mock stats for demo
   const stats = {
     totalModels: recentModels.length,
     activeUsers: userSummary.length,
     recentChanges: 24,
   };
-  
+
   return (
     <Layout>
       <Box sx={{ mb: 4 }}>
@@ -113,13 +113,13 @@ const Dashboard: React.FC = () => {
           Welcome back, {state.user?.firstName}!
         </Typography>
       </Box>
-      
+
       <Grid container spacing={3}>
         {/* Stats Cards */}
         <Grid item xs={12} md={4}>
           <Card>
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                 <DescriptionIcon color="primary" sx={{ mr: 1, fontSize: 28 }} />
                 <Typography variant="h6" component="div">
                   Financial Models
@@ -133,8 +133,8 @@ const Dashboard: React.FC = () => {
               </Typography>
             </CardContent>
             <CardActions>
-              <Button 
-                size="small" 
+              <Button
+                size="small"
                 endIcon={<ArrowForwardIcon />}
                 component={Link}
                 to="/models"
@@ -144,11 +144,11 @@ const Dashboard: React.FC = () => {
             </CardActions>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} md={4}>
           <Card>
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                 <GroupIcon color="primary" sx={{ mr: 1, fontSize: 28 }} />
                 <Typography variant="h6" component="div">
                   Team Members
@@ -162,8 +162,8 @@ const Dashboard: React.FC = () => {
               </Typography>
             </CardContent>
             <CardActions>
-              <Button 
-                size="small" 
+              <Button
+                size="small"
                 endIcon={<ArrowForwardIcon />}
                 component={Link}
                 to="/users"
@@ -173,11 +173,11 @@ const Dashboard: React.FC = () => {
             </CardActions>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} md={4}>
           <Card>
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                 <AssessmentIcon color="primary" sx={{ mr: 1, fontSize: 28 }} />
                 <Typography variant="h6" component="div">
                   Recent Activity
@@ -191,8 +191,8 @@ const Dashboard: React.FC = () => {
               </Typography>
             </CardContent>
             <CardActions>
-              <Button 
-                size="small" 
+              <Button
+                size="small"
                 endIcon={<ArrowForwardIcon />}
                 component={Link}
                 to="/activity"
@@ -202,17 +202,24 @@ const Dashboard: React.FC = () => {
             </CardActions>
           </Card>
         </Grid>
-        
+
         {/* Recent Models */}
         <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 2, height: '100%' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Paper sx={{ p: 2, height: "100%" }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 2,
+              }}
+            >
               <Typography variant="h6" component="h2">
                 Recent Models
               </Typography>
-              <Button 
-                startIcon={<AddIcon />} 
-                variant="contained" 
+              <Button
+                startIcon={<AddIcon />}
+                variant="contained"
                 color="primary"
                 component={Link}
                 to="/models/new"
@@ -222,18 +229,18 @@ const Dashboard: React.FC = () => {
               </Button>
             </Box>
             <Divider sx={{ mb: 2 }} />
-            
+
             {loadingModels ? (
               <Typography>Loading...</Typography>
             ) : modelsError ? (
               <Typography color="error">Error loading models</Typography>
             ) : recentModels.length === 0 ? (
-              <Box sx={{ textAlign: 'center', py: 4 }}>
+              <Box sx={{ textAlign: "center", py: 4 }}>
                 <Typography color="textSecondary" gutterBottom>
                   No models yet
                 </Typography>
-                <Button 
-                  variant="contained" 
+                <Button
+                  variant="contained"
                   color="primary"
                   startIcon={<AddIcon />}
                   component={Link}
@@ -247,7 +254,11 @@ const Dashboard: React.FC = () => {
               <List>
                 {recentModels.map((model) => (
                   <React.Fragment key={model.id}>
-                    <ListItem button component={Link} to={`/models/${model.id}`}>
+                    <ListItem
+                      button
+                      component={Link}
+                      to={`/models/${model.id}`}
+                    >
                       <ListItemText
                         primary={model.name}
                         secondary={
@@ -256,11 +267,11 @@ const Dashboard: React.FC = () => {
                               component="span"
                               variant="body2"
                               color="textPrimary"
-                              sx={{ display: 'inline' }}
+                              sx={{ display: "inline" }}
                             >
-                              {model.description || 'No description'}
+                              {model.description || "No description"}
                             </Typography>
-                            {' — Updated '}
+                            {" — Updated "}
                             {new Date(model.updatedAt).toLocaleDateString()}
                           </React.Fragment>
                         }
@@ -278,15 +289,15 @@ const Dashboard: React.FC = () => {
             )}
           </Paper>
         </Grid>
-        
+
         {/* Team Members */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, height: '100%' }}>
+          <Paper sx={{ p: 2, height: "100%" }}>
             <Typography variant="h6" component="h2" gutterBottom>
               Team Members
             </Typography>
             <Divider sx={{ mb: 2 }} />
-            
+
             {loadingUsers ? (
               <Typography>Loading...</Typography>
             ) : usersError ? (
@@ -303,10 +314,14 @@ const Dashboard: React.FC = () => {
                       primary={`${user.firstName} ${user.lastName}`}
                       secondary={user.email}
                     />
-                    <Chip 
-                      size="small" 
-                      label={user.roles[0]} 
-                      color={user.roles.includes('ADMIN') ? 'primary' : 'default'}
+                    <Chip
+                      size="small"
+                      label={user.roles[0]}
+                      color={
+                        user.roles.includes(UserRole.ADMIN)
+                          ? "primary"
+                          : "default"
+                      }
                     />
                   </ListItem>
                 ))}

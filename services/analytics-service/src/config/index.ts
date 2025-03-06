@@ -1,4 +1,4 @@
-/ services/analytics-service/src/config/index.ts
+// services/analytics-service/src/config/index.ts
 
 import dotenv from 'dotenv';
 

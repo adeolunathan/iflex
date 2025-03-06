@@ -100,4 +100,3 @@ export enum ReportType {
     createdBy: string;
     updatedBy: string;
   }
-  

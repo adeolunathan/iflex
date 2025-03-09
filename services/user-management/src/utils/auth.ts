@@ -1,11 +1,11 @@
 // services/user-management/src/utils/auth.ts
 
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import { config } from "../config";
 import { User, UserSession } from "../types";
 import { pgPool, redisClient } from "../db";
+import { signJwt, verifyJwt } from "./jwt-helpers";
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, config.bcryptSaltRounds);
@@ -31,11 +31,8 @@ export async function generateToken(user: User): Promise<UserSession> {
     sessionId,
   };
 
-  // Fix: Convert string secret to Buffer
-  const secretBuffer = Buffer.from(config.jwtSecret);
-
-  // Use the buffer as the secret
-  const token = (jwt.sign as any)(tokenPayload, config.jwtSecret, {
+  // Use the helper function for signing
+  const token = signJwt(tokenPayload, config.jwtSecret, {
     expiresIn: config.jwtExpiresIn,
   });
 
@@ -77,16 +74,18 @@ export async function verifyToken(token: string): Promise<{
   organizationId: string;
 } | null> {
   try {
-    // Fix: Convert string secret to Buffer for verify too
-    const secretBuffer = Buffer.from(config.jwtSecret);
-
-    const decoded = jwt.verify(token, secretBuffer) as {
+    // Use the helper function for verification
+    const decoded = verifyJwt<{
       sub: string;
       email: string;
       roles: string[];
       organizationId: string;
       sessionId: string;
-    };
+    }>(token, config.jwtSecret);
+
+    if (!decoded) {
+      return null;
+    }
 
     // Check if session still exists and is valid
     const cachedSession = await redisClient.get(`session:${decoded.sessionId}`);
@@ -151,6 +150,7 @@ export async function verifyToken(token: string): Promise<{
   }
 }
 
+// The rest of the file remains the same
 export async function invalidateSession(sessionId: string): Promise<boolean> {
   try {
     // Remove from database
